@@ -1,4 +1,6 @@
 import pandas as pd
+import os
+from sklearn.model_selection import train_test_split
 
 genre_map = {
     # Rock / Punk / Metal
@@ -79,7 +81,29 @@ def clean_data(df):
 
     return df
 
+def split(df):
+    # 80% train, 10% validation, 10% test, stratified by genre group.
+    train_df, heldout_df = train_test_split(df, test_size=0.2, stratify=df['genre_group'], random_state=42)
+    val_df, test_df = train_test_split(heldout_df, test_size=0.5, stratify=heldout_df['genre_group'], random_state=42
+    )
+
+    train_df = train_df.reset_index(drop=True)
+    val_df = val_df.reset_index(drop=True)
+    test_df = test_df.reset_index(drop=True)
+
+    print(f"Training set:   {len(train_df):,} rows")
+    print(f"Validation set: {len(val_df):,} rows")
+    print(f"Test set:       {len(test_df):,} rows")
+
+    os.makedirs('data/splits', exist_ok=True)
+    train_df.to_csv('data/splits/train.csv', index=False)
+    val_df.to_csv('data/splits/val.csv', index=False)
+    test_df.to_csv('data/splits/test.csv', index=False)
+
+    return train_df, val_df, test_df
+
 if __name__ == '__main__':
     df = pd.read_csv('data/spotify-tracks-dataset.csv')
     df = clean_data(df)
-    print(df.head())
+    train_df, val_df, test_df = split(df)
+    print(train_df['genre_group'].value_counts(normalize=True).round(3))
