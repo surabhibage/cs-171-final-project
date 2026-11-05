@@ -10,20 +10,6 @@ __pycache__/
 # Jupyter generated files
 .ipynb_checkpoints/
 
-# Credentials and secrets
-.env
-*.env
-secrets/
-credentials.json
-
-# Local data
-data/*
-#*.csv
-*.xlsx
-!data/dataAPIinfo.txt
-
-# Operating system files
-.DS_Store
 
 # IDE/editor files
 .vscode/
