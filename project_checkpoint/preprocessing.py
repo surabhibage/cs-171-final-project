@@ -78,6 +78,7 @@ def clean_data(df):
     df['genre_group'] = df['track_genre'].map(genre_map)
     df = df.dropna()
     df = df.drop_duplicates('track_id')
+    df = df[df['genre_group'] != 'kids']
 
     return df
 
