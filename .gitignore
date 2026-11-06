@@ -17,3 +17,5 @@ __pycache__/
 
 # Local datasets and generated splits
 /data/
+
+.DS_Store
