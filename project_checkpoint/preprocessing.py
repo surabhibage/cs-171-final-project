@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 genre_map = {
     # Rock / Punk / Metal
@@ -76,37 +79,32 @@ def clean_data(df):
     df['genre_group'] = df['track_genre'].map(genre_map)
     df = df.dropna()
     df = df.drop_duplicates('track_id')
-    print(len(df))
+    df = df[df['genre_group'] != 'kids']
+    print(f"Cleaned tracks: {len(df):,}")
     return df
 
 def split(df):
-    # Split the cleaned data: approximately 80% training, 10% validation, 10% test.
-    # Sample within each genre group to preserve class proportions.
-    train_df = df.groupby('genre_group', group_keys=False).sample(
-        frac=0.8, random_state=42
-    ) # we use group by to ensure the split is stratified 
-    heldout_df = df.drop(index=train_df.index)
-    validation_df = heldout_df.groupby('genre_group', group_keys=False).sample(
-        frac=0.5, random_state=42
+    # Stratified 80% training, 10% validation, 10% final test.
+    train_df, heldout_df = train_test_split(
+        df, test_size=0.2, stratify=df['genre_group'], random_state=42
     )
-    test_df = heldout_df.drop(index=validation_df.index)
+    validation_df, test_df = train_test_split(
+        heldout_df, test_size=0.5,
+        stratify=heldout_df['genre_group'], random_state=42
+    )
+    train_df = train_df.reset_index(drop=True)
+    validation_df = validation_df.reset_index(drop=True)
+    test_df = test_df.reset_index(drop=True)
 
-    # Shuffle the rows while keeping the split reproducible.
-    train_df = train_df.sample(frac=1, random_state=42).reset_index(drop=True)
-    validation_df = validation_df.sample(frac=1, random_state=42).reset_index(drop=True)
-    test_df = test_df.sample(frac=1, random_state=42).reset_index(drop=True)
+    data_dir = Path(__file__).resolve().parent.parent / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    for name, part in [('train', train_df), ('validation', validation_df), ('test', test_df)]:
+        part.to_csv(data_dir / f'{name}.csv', index=False)
+        print(f"{name.capitalize()} set: {len(part):,} rows")
+    return train_df, validation_df, test_df
 
-    print(f"Training set: {train_df.shape[0]:,} rows")
-    print(f"Validation set: {validation_df.shape[0]:,} rows")
-    print(f"Test set: {test_df.shape[0]:,} rows")
-
-    train_df.to_csv('data/train.csv')
-    validation_df.to_csv('data/validation.csv')
-    test_df.to_csv('data/test.csv')
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/spotify-tracks-dataset.csv')
-    df = clean_data(df)
-    split(df)
-    print(df.head())
-
+    data_dir = Path(__file__).resolve().parent.parent / 'data'
+    df = clean_data(pd.read_csv(data_dir / 'spotify-tracks-dataset.csv'))
+    train_df, validation_df, test_df = split(df)
