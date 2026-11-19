@@ -3,6 +3,8 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from urllib.request import urlretrieve
+
 genre_map = {
     # Rock / Punk / Metal
     'alt-rock': 'rock_metal', 'alternative': 'rock_metal', 'grunge': 'rock_metal',
@@ -104,7 +106,13 @@ def split(df):
     return train_df, validation_df, test_df
 
 
+
+
+
 if __name__ == '__main__':
     data_dir = Path(__file__).resolve().parent.parent / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    urlretrieve('https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/resolve/main/dataset.csv', data_dir / 'spotify-tracks-dataset.csv')
+
     df = clean_data(pd.read_csv(data_dir / 'spotify-tracks-dataset.csv'))
     train_df, validation_df, test_df = split(df)
