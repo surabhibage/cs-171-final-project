@@ -1,0 +1,28 @@
+##### Logistic Regression #####
+
+Loss: cross-entropy (log loss) with L2 regularization, 
+C = 10, balanced class weights.
+
+Optimizer was lbfgs with max_iter = 2000 and every C iterated through 
+had converged well before the limit (~90 iterations at C = 10).
+
+
+##### Random Forest #####
+
+Loss: There was no gradient-trained loss. Each tree picks 
+splits that minimize Gini impurity (weighted by balanced_subsample class weights), 
+and the forest predicts by majority vote across the 200 trees.
+
+##### RNN #####
+
+Loss: cross-entropy with balanced class weights with Adam optimizer. 
+The RNN ran with a learning rate at 0.001 and hidden size being 128,
+with each batch size being 256, all over 20 epochs.
+
+Training curves: The training loss had decreased steadily across all 20 epochs (about 1.87 -> 1.60), and
+validation loss also decreased early on from about 1.88 to 1.70, but mostly 
+leveled off over the last ~6 epochs, staying around 1.70-1.72. 
+The gap between training and validation loss additionally grew from 
+about 0.01 to 0.10, which shows mild overfitting starting near the end. The validation
+loss never clearly rose, so 20 epochs was a reasonable stopping point, and training longer
+would likely give little improvement on validation.
