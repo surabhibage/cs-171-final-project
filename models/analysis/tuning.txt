@@ -1,0 +1,37 @@
+##### Logistic Regression #####
+
+The features included adding key, mode and time_signature to the 10 core audio features 
+which slightly helped the validation accuracy and macro f1, going 
+from 41.44% to 41.78% (val acc), and 0.240 to 0.252 for macro-f1.
+
+Regularization: The C in {0.01, 0.1, 1, 10, 100} had all gave about 
+the same validation accuracy (41.75-41.78%) and macro F1 (0.242-0.252),
+but the best result came at C = 10.
+
+##### Random Forest #####
+
+min_samples_leaf in {1, 3, 5, 10} x max_features in {sqrt, 0.5, 1.0}, 
+with and without class weights (validation macro F1):
+From the iterations of rf, smaller leaves were better at 
+about 0.47 at leaf 1-3, down to about 0.43 at leaf 10, and
+the best unweighted was leaf 1 with sqrt (0.466), and the best 
+balanced was leaf 1 with max_features 0.5 (0.474).
+
+The n estimators in {100, 200, 300, 400, 500} had 
+scores that ranged from 0.468-0.474, so the number of trees
+had not mattered that much, and 200 was the ideal n (0.474).
+
+
+##### RNN ####
+Each combination was trained for 20 epochs with 
+balanced class weights (validation macro F1):
+
+hidden 32:  lr 0.01 -> 0.299, lr 0.001 -> 0.312
+hidden 64:  lr 0.01 -> 0.166, lr 0.001 -> 0.321
+hidden 128: lr 0.01 -> 0.072, lr 0.001 -> 0.349
+
+After all the iterations, hidden size 128 and lr 0.001 (0.349) 
+were the best parameters. One thing with lr 0.001 is that a larger 
+hidden size had helped with getting a better f1 score, and with
+lr 0.01, the training became unstable at larger sizes 
+and the model mostly predicted one genre.

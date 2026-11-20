@@ -1,0 +1,35 @@
+##### Class Imbalance #####
+
+Regarding our dataset, class imbalance was present with genre group ranges going from 
+22.5% of tracks (electronic_dance) to 2.3% (reggae), so the difference is ~10x.
+Also, the stratified split kept these same proportions in the train, validation and test sets.
+
+electronic_dance 22.5%, rock_metal 19.6%, pop 12.8%, chill_jazz_classical 12.1%, latin 10.7%,
+world 9.2%, hiphop_rnb 4.5%, country 3.4%, indie_folk 2.9%, reggae 2.3%
+
+
+The methodology we used was balanced class weights in every model, so mistakes on 
+small genres cost more during training, meaning only training is 
+affected, while validation and test keep their real distribution. 
+We also chose class weights over resampling and SMOTE because 
+they keep the training data unchanged and SMOTE would have 
+created invalid values for categorical features like key and time_signature.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The effect of using balanced class weights
+(validation + unweighted -> balanced):
+
+Logistic Regression (C = 10)
+- Accuracy 41.78% -> 36.01%, macro F1 0.252 -> 0.289
+- Recall: reggae 0.01 -> 0.49, indie_folk 0.01 -> 0.39, country 0.20 -> 0.53
+
+Random Forest (200 trees, min_samples_leaf = 3)
+- Accuracy 56% -> 55%, macro F1 0.45 -> 0.47
+- Recall: reggae 0.15 -> 0.31, country 0.40 -> 0.55, hiphop_rnb 0.18 -> 0.27
+
+RNN (hidden size 64, lr 0.001)
+- Accuracy 47% -> 39%, macro F1 0.31 -> 0.32
+- Recall: reggae 0.03 -> 0.61, indie_folk 0.02 -> 0.36, country 0.21 -> 0.52
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

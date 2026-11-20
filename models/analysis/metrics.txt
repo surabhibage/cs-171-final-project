@@ -1,7 +1,7 @@
 ##### Logistic Regression #####
 
 Final model: 13 audio features 
-(key and time_signature one-hot encoded), C = 10, balanced class weights.
+(key and time_signature were one-hot encoded), C = 10 with balanced class weights.
 
 Validation: accuracy 36.01%, macro F1: 0.289
 Test: accuracy 37.04%, macro F1: 0.300, weighted F1: 0.38
@@ -13,9 +13,10 @@ Worst genres (test F1): pop 0.10, world 0.10, hiphop_rnb 0.15, reggae 0.15
 
 Class weights had traded accuracy for a better macro F1 (validation: 41.78% -> 36.01% accuracy, 0.252 -> 0.289 macro F1), 
 while recall on the small genres had a large gain (reggae 0.01 -> 0.49, indie_folk 0.01 -> 0.39, country 0.20 -> 0.53). 
-This in turns means all their precision scores stayed low (reggae 0.09 on test), and the model over-predicts them. 
+owever, their precision stayed low (reggae 0.09 on test), 
+so it means the model had over-predicted them.
 
-However, both pop and world stayed weak either way, most likely because 
+From this, both pop and world stayed weak either way, most likely because 
 their audio features have some overlap with other genres.
 
 
@@ -30,6 +31,8 @@ Test: accuracy 57%, macro F1: 0.48, weighted F1: 0.56
 Best genres (test F1): electronic_dance 0.69, chill_jazz_classical 0.67, rock_metal 0.62, latin 0.59
 Worst genres (test F1): reggae 0.26, indie_folk 0.30, world 0.34, hiphop_rnb 0.40
 
+Note: only world stayed weak here, not alongside pop
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Class weights helped only slightly: with the same settings, validation macro F1 was 0.465
@@ -39,3 +42,19 @@ indie_folk 0.22), but their precision is much higher than in logistic regression
 
 
 ##### RNN #####
+
+The final model had 13 audio features at hidden size 128 and lr 0.001,
+over 20 epochs with balanced class weights.
+
+Validation: accuracy 41%, macro F1: 0.35
+Test: accuracy 42%, macro F1: 0.35, weighted F1: 0.44
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Best genres (test F1): chill_jazz_classical 0.61, electronic_dance 0.61, rock_metal 0.52, latin 0.47
+Worst genres (test F1): reggae 0.18, indie_folk 0.19, world 0.21, pop 0.22
+
+Like logistic regression, the class weights had made the RNN 
+over-predict small genres (high recall but low precision, and 
+for the test set, country 0.68 recall / 0.21 precision, reggae 0.57 / 0.11).
+Similarly to the other models as well (such as lr), the genres pop and world stayed weak.
