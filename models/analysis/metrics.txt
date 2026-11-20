@@ -1,2 +1,41 @@
-# Logistic Regression
+##### Logistic Regression #####
 
+Final model: 13 audio features 
+(key and time_signature one-hot encoded), C = 10, balanced class weights.
+
+Validation: accuracy 36.01%, macro F1: 0.289
+Test: accuracy 37.04%, macro F1: 0.300, weighted F1: 0.38
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Best genres (test F1): chill_jazz_classical 0.54, electronic_dance 0.54, rock_metal 0.50,latin 0.45
+Worst genres (test F1): pop 0.10, world 0.10, hiphop_rnb 0.15, reggae 0.15
+
+Class weights had traded accuracy for a better macro F1 (validation: 41.78% -> 36.01% accuracy, 0.252 -> 0.289 macro F1), 
+while recall on the small genres had a large gain (reggae 0.01 -> 0.49, indie_folk 0.01 -> 0.39, country 0.20 -> 0.53). 
+This in turns means all their precision scores stayed low (reggae 0.09 on test), and the model over-predicts them. 
+
+However, both pop and world stayed weak either way, most likely because 
+their audio features have some overlap with other genres.
+
+
+##### Random Forest #####
+
+Final model: 10 audio features, 200 trees, min_samples_leaf = 1, max_features = 0.5,
+balanced_subsample class weights
+
+Validation: accuracy 56%, macro F1: 0.47
+Test: accuracy 57%, macro F1: 0.48, weighted F1: 0.56
+
+Best genres (test F1): electronic_dance 0.69, chill_jazz_classical 0.67, rock_metal 0.62, latin 0.59
+Worst genres (test F1): reggae 0.26, indie_folk 0.30, world 0.34, hiphop_rnb 0.40
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Class weights helped only slightly: with the same settings, validation macro F1 was 0.465
+unweighted vs 0.474 balanced. Small genres still have low recall (test: reggae 0.18,
+indie_folk 0.22), but their precision is much higher than in logistic regression (reggae
+0.45 vs 0.09), so the forest's predictions of small genres are more often correct.
+
+
+##### RNN #####
